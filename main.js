@@ -1,5 +1,6 @@
 const container = document.getElementById('container');
 let scoreDisplay = document.querySelector('.scoreDisplay')
+let highScore = document.querySelector('.highScore')
 let currentSnake = [2, 1, 0];
 let snake = 1;
 let direction = 1;
@@ -7,7 +8,7 @@ let score = 0;
 let speed = 0.8;
 let intervalTime = 0;
 let interval = 0;
-let width = 8;
+let width = 10;
 
 function createRows(rows,columns) {
     container.style.setProperty('--grid-rows', rows);
@@ -26,7 +27,7 @@ function startGame() {
     randomApple(square)
     direction = 1
     scoreDisplay.innerHTML = score
-    intervalTime= 1000
+    intervalTime= 500
     currentSnake = [2,1,0];
     currentSnake.forEach((index) => square[index].classList.add('snake'));
     interval = setInterval(moveOutcome, intervalTime); 
@@ -36,24 +37,24 @@ function moveOutcome() {
     let square = document.querySelectorAll('.grid-item');
     if (checkForHits(square)) {
         alert('You hit something.')
+        console.log(score)
+        highScore.innerHTML = score
         return clearInterval(interval);
     } else {
         moveSnake(square)
     }
 }
 
-function moveSnake() {
-    let square = document.querySelectorAll('.grid-item');
-    let back = currentSnake.pop();
-    square[back].classList.remove(snake)
+function moveSnake(squares) {
+    let tail = currentSnake.pop();
+    squares[tail].classList.remove("snake");
     currentSnake.unshift(currentSnake[0] + direction);
-    eatApple(square,back);
-    square[currentSnake[0]].classList.add('snake')  
-}
+    // movement ends here
+    eatApple(squares, tail);
+    squares[currentSnake[0]].classList.add("snake");
+  }
 
 function checkForHits(square) {
-
-    console.log(square.length)
     if (
       (currentSnake[0] + width >= width * width && direction === width) ||
       (currentSnake[0] % width === width - 1 && direction === 1) ||
@@ -67,15 +68,12 @@ function checkForHits(square) {
     }
   }
 
-  function eatApple(square, back) {
-    if (square === null || square === undefined) {
-        return
-    }
-    if (square[currentSnake[0]].classList.contains("apple")) {
-      square[currentSnake[0]].classList.remove("apple");
-      square[tail].classList.add("snake");
+  function eatApple(squares, tail) {
+    if (squares[currentSnake[0]].classList.contains("apple")) {
+      squares[currentSnake[0]].classList.remove("apple");
+      squares[tail].classList.add("snake");
       currentSnake.push(tail);
-      randomApple(square);
+      randomApple(squares);
       score++;
       scoreDisplay.textContent = score;
       clearInterval(interval);
@@ -92,8 +90,8 @@ function checkForHits(square) {
     } while (square[appleIndex].classList.contains('snake'));
     square[appleIndex].classList.add('apple');
     }
-console.log(direction)
-console.log(width)
+console.log(direction ,'direction')
+console.log(width ,'width')
 
 var KEYS = {
     A: 65,
@@ -118,8 +116,7 @@ document.onkeydown = function (e) {
     }
 }
 
-console.log('no error?')
-createRows(30,30)
+createRows(10,10)
 startGame()
 moveOutcome()
 moveSnake()
